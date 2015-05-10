@@ -1,10 +1,10 @@
 PrismAdapter
 ============
 
-Statical Prism has a construct called a Mirror which creates a local source code repository and uses an adapter to synchronize with a data source. To date Statical Prism has only one adapter which just uses finsql.exe from Dynamics NAV 2013 (or higher) to export source code objects to the local mirror location.
+Statical Prism has a construct called a Mirror which creates a local source code repository and uses an adapter to synchronize with a data source. To date Statical Prism has only one adapter which just uses finsql.exe from Dynamics NAV 2013 (or higher) to export source code objects to the local mirror location. This allows Statical Prism users to seamlessly integrate with existing Dynamics NAV environments and inspect code and be alerted when objects are updated.
 
 Note: Visit http://stati-cal.com/ to learn more about mirrors and Statical Prism.
 
-The PrismAdapter repository contains an interface for the adapter that mirrors use to access Dynamics NAV source code objects. This initial release contains a bare-bones non-code-reviewed adapter interface which will need a little more work before we freeze the interface for public contribution. However already, contributors can begin prototyping because it is likely that the basics will not change that much. We do plan for better error handling support, capability exposure as well as asynchronous methods for "version 1".
+The PrismAdapter repository contains an interface for the adapter that mirrors use to access Dynamics NAV source code objects. This 1.0.0 release is our best effort for an adapter interface which is now frozen with respect to backwards compatibility. You are of course welcome to contribute fixes and improvements if you'd like
 
-There is no specific plug-in mechanism. We simply plan to allow users and developers to drop in their adapter implementations into a Statical Prism installation extension folder and then Prism will discover these. This work has yet to start but should not take long to complete.
+Please note that we still have not made a dynamic loader for PrismAdapters so at this point new adapters must be sent to us for inclusion in Statical Prism. However we do expect to have one at some point in the future - depending on public interest.

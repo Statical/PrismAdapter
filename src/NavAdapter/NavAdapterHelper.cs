@@ -1,0 +1,181 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Diagnostics;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Data;
+using System.Data.SqlClient;
+using System.Runtime.Serialization;
+using System.Diagnostics.Contracts;
+
+namespace Statical.NavAdapter
+{
+    public static class NavAdapterHelper
+    {
+        #region INavAdapter Helpers
+        /// <summary>
+        /// Retrieve metadata for the given id range set.
+        /// </summary>
+        /// <param name="environment">A Dynamics NAV environment</param>
+        /// <param name="idRanges">A set of Nobject id ranges.</param>
+        /// <param name="cancellationToken">A task cancellation token to abort the operation</param>
+        /// <returns>A set of object metadata</returns>
+        public static async Task<ISet<NavObjectMetadata>> ObjectMetadataAsync(this NavEnvironment environment, ISet<NavObjectIdRange> idRanges, CancellationToken cancellationToken)
+        {
+            Contract.Requires(environment != null);
+            Contract.Requires(idRanges != null);
+            Contract.Requires(Contract.ForAll(idRanges, x => x != null));
+
+            var result = new HashSet<NavObjectMetadata>();
+
+            using (var connection = new SqlConnection(environment.DbConnectionString))
+            {
+                NavObjectType[] allObjectTypes = (NavObjectType[])Enum.GetValues(typeof(NavObjectType));
+                var typeWhereClause = " Type IN (" + string.Join(",", allObjectTypes.Select(t => (int)t)) + ")";
+                var idWhereClause = (idRanges.Count == 0) ? "1=1" : NavObjectIdRange.SqlWhereClause(idRanges);
+                var query =
+                    @"SELECT 
+                        ID, 
+                        Type, 
+                        Name, 
+                        [BLOB Size], 
+                        [Version List], 
+                        Date, 
+                        Time, 
+                        timestamp 
+                    FROM dbo.Object WITH (NOLOCK)
+                    WHERE " + typeWhereClause + " AND (" + idWhereClause + ")";
+
+                await connection.OpenAsync(cancellationToken).ConfigureAwait(false);
+                try
+                {
+                    using (var command = new SqlCommand(query, connection))
+                    {
+                        using (var reader = await command.ExecuteReaderAsync(CommandBehavior.SingleResult, cancellationToken).ConfigureAwait(false))
+                        {
+                            while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+                            {
+                                // fetch values
+                                var id = reader.GetInt32(0);
+                                var type = reader.GetInt32(1);
+                                var name = reader.GetString(2);
+                                var blobSize = reader.GetInt32(3);
+                                var versionList = reader.GetString(4);
+                                var date = reader.GetDateTime(5);
+                                var time = reader.GetDateTime(6);
+                                var timestamp = reader.GetSqlBinary(7);
+
+                                var dateTime = new DateTime(date.Year, date.Month, date.Day, time.Hour, time.Minute, time.Second);
+
+                                var metadata = new NavObjectMetadata()
+                                {
+                                    ObjectReference = new NavObjectReference((NavObjectType)type, id),
+                                    Name = name,
+                                    BlobSize = blobSize,
+                                    VersionList = versionList,
+                                    Time = dateTime,
+                                    RowVersion = ToHex(timestamp.Value)
+                                };
+                                result.Add(metadata);
+                            }
+                        }
+                    }
+                }
+                finally
+                {
+                    connection.Close();
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Test the environment connection.
+        /// </summary>
+        /// <param name="environment">A Dynaics NAV environment</param>
+        /// <param name="cancellationToken">A task cancellation token to abort the operation</param>
+        /// <returns></returns>
+        public static async Task<ISet<string>> TestAsync(this NavEnvironment environment, CancellationToken cancellationToken)
+        {
+            Contract.Requires(environment != null);
+
+            var result = new HashSet<string>();
+            try
+            {
+                var temp = await environment.ObjectMetadataAsync(new HashSet<NavObjectIdRange>(), cancellationToken).ConfigureAwait(false);
+                // temp -> dev/null
+            }
+            catch (Exception e)
+            {
+                result.Add("Could not connect to database: " + e.Message);
+            }
+            return result;
+        }
+        #endregion
+
+        #region Misc Helpers
+        /// <summary>
+        /// Waits for the process to complete asynchronously.
+        /// </summary>
+        /// <param name="process">The process to wait for</param>
+        /// <param name="cancellationToken">The cancellation</param>
+        /// <param name="throwOnExitError">Throws a ProcessExitException if the process terminated exceptionally</param>
+        /// <returns>The process</returns>
+        public static async Task<Process> WaitAsync(Process process, CancellationToken cancellationToken, bool throwOnExitError = true)
+        {
+            Contract.Requires(process != null);
+
+            while (true)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                if (process.HasExited)
+                {
+                    break;
+                }
+                await Task.Run(() => process.WaitForExit(100));
+            }
+            return process;
+        }
+
+        /// <summary>
+        /// Try to kill a process.
+        /// </summary>
+        /// <param name="process">The process to kill</param>
+        /// <returns>True if the process was ended, false otherwise</returns>
+        public static bool TryEndProcess(this Process process)
+        {
+            try
+            {
+                process.Kill();
+                process.Dispose();
+            }
+            catch (Exception)
+            {
+                try
+                {
+                    process.Dispose();
+                }
+                catch (ObjectDisposedException)
+                { 
+                    // already disposed
+                }
+                catch (Exception)
+                {
+                    // ignore
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        private static string ToHex(byte[] bs)
+        {
+            return string.Join("-", bs.Select(b => string.Format("{0:X2}", b)));
+        }
+
+        #endregion
+    }
+}

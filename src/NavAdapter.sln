@@ -5,6 +5,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NavAdapter", "NavAdapter\Na
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NavAdapterTestApp", "NavAdapterTestApp\NavAdapterTestApp.csproj", "{3111791F-29EA-4B7D-81F1-B69CB7930B29}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nav2013Adapter", "Nav2013Adapter\Nav2013Adapter.csproj", "{2E7634A7-1D55-4FCE-B8F0-9B73E434D91E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nav2015Adapter", "Nav2015Adapter\Nav2015Adapter.csproj", "{0EB31391-8584-4CDF-B7DA-1AF1A5C91935}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -19,6 +23,14 @@ Global
 		{3111791F-29EA-4B7D-81F1-B69CB7930B29}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3111791F-29EA-4B7D-81F1-B69CB7930B29}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3111791F-29EA-4B7D-81F1-B69CB7930B29}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2E7634A7-1D55-4FCE-B8F0-9B73E434D91E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2E7634A7-1D55-4FCE-B8F0-9B73E434D91E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2E7634A7-1D55-4FCE-B8F0-9B73E434D91E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2E7634A7-1D55-4FCE-B8F0-9B73E434D91E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0EB31391-8584-4CDF-B7DA-1AF1A5C91935}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0EB31391-8584-4CDF-B7DA-1AF1A5C91935}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0EB31391-8584-4CDF-B7DA-1AF1A5C91935}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0EB31391-8584-4CDF-B7DA-1AF1A5C91935}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Statical NavAdapter")]
-[assembly: AssemblyDescription("Statical Prism storage extensibility mechanism.")]
+[assembly: AssemblyTitle("Nav2015Adapter")]
+[assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Statical")]
-[assembly: AssemblyProduct("NavAdapter")]
-[assembly: AssemblyCopyright("Copyright ©  2014")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("Nav2015Adapter")]
+[assembly: AssemblyCopyright("Copyright ©  2015")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("fceb07ea-2fdb-46d4-aa33-3f988b0bb58e")]
+[assembly: Guid("b0185947-2c35-4875-8814-ce2d8d643403")]
 
 // Version information for an assembly consists of the following four values:
 //

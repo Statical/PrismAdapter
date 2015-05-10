@@ -4,11 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NavAdapter
+namespace Statical.NavAdapter
 {
 
     /// <summary>
-    /// This class represents metadata of an object. This can be used for update detection in the NAV mirrored database.
+    /// This class represents metadata of an object. This can be used for update detection in the NAV
+    /// mirrored database.
     /// </summary>
     public class NavObjectMetadata
     {
@@ -39,11 +40,16 @@ namespace NavAdapter
         public DateTime Time { get; set; }
 
         /// <summary>
-        /// The timestamp (or rowversion) column value of NAV's Object table. Can be used for strict comparison, which 
-        /// will give differences on any change in the object table, including locking and unlocking of objects
+        /// The timestamp (or rowversion) column value of NAV's Object table. Can be used for strict
+        /// comparison, which will give differences on any change in the object table, including
+        /// locking and unlocking of objects
         /// </summary>
         public string RowVersion { get; set; }
 
+        /// <summary>
+        /// Combine the metadata into a string. Useful for debugging purposes.
+        /// </summary>
+        /// <returns>A string representation of the metadata.</returns>
         public override string ToString()
         {
             return (new StringBuilder())
@@ -56,6 +62,5 @@ namespace NavAdapter
                 .Append("RowVersion=").Append(RowVersion)
                 .Append("}").ToString();
         } 
-
     }
 }

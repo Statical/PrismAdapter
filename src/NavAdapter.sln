@@ -1,13 +1,19 @@
-﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NavAdapter", "NavAdapter\NavAdapter.csproj", "{566C9A15-EC67-4183-A438-72FD4CBD37A6}"
+# Visual Studio Version 17
+VisualStudioVersion = 17.7.34031.279
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NavAdapter", "NavAdapter\NavAdapter.csproj", "{566C9A15-EC67-4183-A438-72FD4CBD37A6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NavAdapterTestApp", "NavAdapterTestApp\NavAdapterTestApp.csproj", "{3111791F-29EA-4B7D-81F1-B69CB7930B29}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NavAdapterTestApp", "NavAdapterTestApp\NavAdapterTestApp.csproj", "{3111791F-29EA-4B7D-81F1-B69CB7930B29}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nav2013Adapter", "Nav2013Adapter\Nav2013Adapter.csproj", "{2E7634A7-1D55-4FCE-B8F0-9B73E434D91E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nav2013Adapter", "Nav2013Adapter\Nav2013Adapter.csproj", "{2E7634A7-1D55-4FCE-B8F0-9B73E434D91E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nav2015Adapter", "Nav2015Adapter\Nav2015Adapter.csproj", "{0EB31391-8584-4CDF-B7DA-1AF1A5C91935}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nav2015Adapter", "Nav2015Adapter\Nav2015Adapter.csproj", "{0EB31391-8584-4CDF-B7DA-1AF1A5C91935}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution", "Solution", "{35F45736-8F50-4F1B-AF51-D434EE06E18E}"
+	ProjectSection(SolutionItems) = preProject
+		Directory.Build.props = Directory.Build.props
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -34,5 +40,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {26000DE4-B715-4AFF-8089-88BB6231B7A5}
 	EndGlobalSection
 EndGlobal

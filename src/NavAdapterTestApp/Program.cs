@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
 using System.Configuration;
 using System.Threading;
@@ -10,96 +8,95 @@ using Statical.NavAdapter;
 using Statical.NavAdapter.Nav2013;
 using Statical.NavAdapter.Nav2015;
 
-namespace NavAdapterTestApp
+namespace NavAdapterTestApp;
+
+class TestApp
 {
-    class TestApp
+    static void Main(string[] args)
     {
-        static void Main(string[] args)
+        Exec(args).Wait();
+    }
+
+    private static async Task Exec(string[] args)
+    {
+        // Set up environment
+        var env = new NavEnvironment();
+
+        string adapter = ConfigurationManager.AppSettings["Adapter"];
+        env.FinSqlPath = ConfigurationManager.AppSettings["FinSqlPath"];
+        env.DbServer = ConfigurationManager.AppSettings["DbServer"];
+        env.DbName = ConfigurationManager.AppSettings["DbName"];
+        env.DbUserId = ConfigurationManager.AppSettings["DbUserId"];
+        env.DbPassword = ConfigurationManager.AppSettings["DbPassword"];
+        INavAdapter nav = null;
+        if (adapter == "Nav2013Adapter")
         {
-            Exec(args).Wait();
+            nav = new Nav2013Adapter(env);
+        }
+        else if (adapter == "Nav2015Adapter")
+        {
+            nav = new Nav2015Adapter(env);
+        }
+        else
+        {
+            throw new InvalidOperationException ("Unknown adapter '" + adapter + "'");
         }
 
-        private static async Task Exec(string[] args)
+        try
         {
-            // Set up environment
-            var env = new NavEnvironment();
+            var cts = new CancellationTokenSource();
 
-            string adapter = ConfigurationManager.AppSettings["Adapter"];
-            env.FinSqlPath = ConfigurationManager.AppSettings["FinSqlPath"];
-            env.DbServer = ConfigurationManager.AppSettings["DbServer"];
-            env.DbName = ConfigurationManager.AppSettings["DbName"];
-            env.DbUserId = ConfigurationManager.AppSettings["DbUserId"];
-            env.DbPassword = ConfigurationManager.AppSettings["DbPassword"];
-            INavAdapter nav = null;
-            if (adapter == "Nav2013Adapter")
+            // DesignObject
+            Console.WriteLine("DesignObject");
+            await nav.DesignObjectAsync(new NavObjectReference(NavObjectType.Page, 50000));
+
+            // Test
+            Console.WriteLine("Test");
+            var errors = await nav.TestAsync(cts.Token);
+            foreach (var error in errors)
             {
-                nav = new Nav2013Adapter(env);
-            }
-            else if (adapter == "Nav2015Adapter")
-            {
-                nav = new Nav2015Adapter(env);
-            }
-            else
-            {
-                throw new InvalidOperationException ("Unknown adapter '" + adapter + "'");
+                Console.WriteLine("Error: " + error);
             }
 
-            try
+            // ObjectMetadata
+            Console.WriteLine("ObjectMetadata");
+            var idRanges = new HashSet<NavObjectIdRange>();
+            idRanges.Add(new NavObjectIdRange(null, 17));
+            idRanges.Add(new NavObjectIdRange(19, 36));
+            idRanges.Add(new NavObjectIdRange(50003, null));
+            var versionExclusions = new HashSet<NavVersionListFilter>();
+            versionExclusions.Add(new NavVersionListFilter("DONTINCLUDE"));
+            versionExclusions.Add(new NavVersionListFilter("WILD*CARD"));
+            var metadata = await nav.ObjectMetadataAsync(idRanges, versionExclusions, cts.Token);
+            // dump to file
+            var metadataFile = "test-metadata.txt";
+            using (var sw = new StreamWriter(metadataFile))
             {
-                var cts = new CancellationTokenSource();
-
-                // DesignObject
-                Console.WriteLine("DesignObject");
-                await nav.DesignObjectAsync(new NavObjectReference(NavObjectType.Page, 50000));
-
-                // Test
-                Console.WriteLine("Test");
-                var errors = await nav.TestAsync(cts.Token);
-                foreach (var error in errors)
+                foreach (var obj in metadata)
                 {
-                    Console.WriteLine("Error: " + error);
+                    sw.WriteLine(obj.ToString());
                 }
-
-                // ObjectMetadata
-                Console.WriteLine("ObjectMetadata");
-                var idRanges = new HashSet<NavObjectIdRange>();
-                idRanges.Add(new NavObjectIdRange(null, 17));
-                idRanges.Add(new NavObjectIdRange(19, 36));
-                idRanges.Add(new NavObjectIdRange(50003, null));
-                var versionExclusions = new HashSet<NavVersionListFilter>();
-                versionExclusions.Add(new NavVersionListFilter("DONTINCLUDE"));
-                versionExclusions.Add(new NavVersionListFilter("WILD*CARD"));
-                var metadata = await nav.ObjectMetadataAsync(idRanges, versionExclusions, cts.Token);
-                // dump to file
-                var metadataFile = "test-metadata.txt";
-                using (var sw = new StreamWriter(metadataFile))
-                {
-                    foreach (var obj in metadata)
-                    {
-                        sw.WriteLine(obj.ToString());
-                    }
-                    sw.Close();
-                }
-                Console.WriteLine("Metadata dumped to file: " + metadataFile);
-
-                // ExportSingle
-                Console.WriteLine("ExportSingle");
-                using (var fileStream = File.Create("test-export-codeunit-50000.txt"))
-                {
-                    await nav.ExportSingleAsync(new NavObjectReference(NavObjectType.Codeunit, 50000), fileStream, cts.Token);
-                }
-
-                // ExportMultiple
-                Console.WriteLine("ExportMultiple");
-                await nav.ExportMultipleAsync(idRanges, versionExclusions, "test-export-multiple.txt", cts.Token);
+                sw.Close();
             }
-            catch (Exception e)
+            Console.WriteLine("Metadata dumped to file: " + metadataFile);
+
+            // ExportSingle
+            Console.WriteLine("ExportSingle");
+            using (var fileStream = File.Create("test-export-codeunit-50000.txt"))
             {
-                Console.WriteLine(e.ToString());
+                await nav.ExportSingleAsync(new NavObjectReference(NavObjectType.Codeunit, 50000), fileStream, cts.Token);
             }
 
-            Console.WriteLine("Press a key to exit");
-            Console.ReadKey();
+            // ExportMultiple
+            Console.WriteLine("ExportMultiple");
+            await nav.ExportMultipleAsync(idRanges, versionExclusions, "test-export-multiple.txt", cts.Token);
         }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.ToString());
+        }
+
+        Console.WriteLine("Press a key to exit");
+        Console.ReadKey();
     }
 }

@@ -1,0 +1,9 @@
+<Project>
+	<PropertyGroup>
+		<Company>Statical ApS</Company>
+		<Copyright>Copyright © 2023 Statical ApS</Copyright>
+		<Version>1.1.0.0</Version>
+		<AssemblyVersion>1.1.0.0</AssemblyVersion>
+		<FileVersion>1.1.0.0</FileVersion>
+	</PropertyGroup>
+</Project>

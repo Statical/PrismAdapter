@@ -36,6 +36,26 @@ namespace Statical.NavAdapter
         /// The database user password.
         /// </summary>
         public string DbPassword { get; set; }
+        
+        /// <summary>
+        /// Database connection timeout.
+        /// </summary>
+        public TimeSpan DbConnectionTimeout { get; set; }
+
+        /// <summary>
+        /// Optional name or IP address of NAV server 
+        /// </summary>
+        public string NavServerName { get; set; }
+
+        /// <summary>
+        /// Optional NAV server instance name
+        /// </summary>
+        public string NavServerInstance { get; set; }
+
+        /// <summary>
+        /// Optional NAV server management port
+        /// </summary>
+        public int NavServerManagementPort { get; set; }
 
         /// <summary>
         /// The database connection string.
@@ -51,7 +71,7 @@ namespace Statical.NavAdapter
                     {
                         DataSource = DbServer,
                         InitialCatalog = DbName,
-                        ConnectTimeout = 6,
+                        ConnectTimeout = Convert.ToInt32(DbConnectionTimeout.TotalSeconds),
                         IntegratedSecurity = true
                     };
                 }
@@ -61,7 +81,7 @@ namespace Statical.NavAdapter
                     {
                         DataSource = DbServer,
                         InitialCatalog = DbName,
-                        ConnectTimeout = 6,
+                        ConnectTimeout = Convert.ToInt32(DbConnectionTimeout.TotalSeconds),
                         IntegratedSecurity = false,
                         UserID = DbUserId,
                         Password = DbPassword

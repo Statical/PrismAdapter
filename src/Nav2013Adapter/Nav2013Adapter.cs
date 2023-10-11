@@ -90,25 +90,37 @@ namespace Statical.NavAdapter.Nav2013
         /// </summary>
         /// <param name="idRanges">NAV style filter expression on ID field, e.g. "0..50000|100000..". 
         /// The function must return metadata for all objects matching that filter</param>
+        /// <param name="versionExclusions">Filter against NAV object's VersionList.
+        /// The function must return meradata for all objects that do NOT match any of the exclusions</param>
         /// <param name="cancellationToken">A token to allow cancellation of the operation</param>
         /// <exception cref="NavAdapterException">In case on an error</exception>
         /// <returns>Metadata for objects matching at least one of the ranges  of idRanges</returns>
-        public Task<ISet<NavObjectMetadata>> ObjectMetadataAsync(ISet<NavObjectIdRange> idRanges, CancellationToken cancellationToken)
+        public Task<ISet<NavObjectMetadata>> ObjectMetadataAsync(ISet<NavObjectIdRange> idRanges, ISet<NavVersionListFilter> versionExclusions, CancellationToken cancellationToken)
         {
-            return this.Context.ObjectMetadataAsync(idRanges, cancellationToken);
+            return this.Context.ObjectMetadataAsync(idRanges, versionExclusions, cancellationToken);
         }
 
         /// <summary>
-        /// Exports the txt representation of an object in NAV to a stream. Implementations will typically export the object 
-        /// (using C/Front or finsql.exe command-line depending on NAV version)
+        /// Lists NAV service tiers by querying the database table "Server Instance"
         /// </summary>
-        /// <param name="navObjectRef">The object to export.</param>
-        /// <param name="outStream">Out stream for exported object</param>
-        /// <param name="cancellationToken">A token to allow cancellation of the operation</param>
-        /// <exception cref="NavAdapterException">In case on an error</exception>
-        /// <exception cref="CannotFindServiceTierException">In case a service tier cannot be found</exception>
-        /// <returns>Task encapsulating asynchronous export operation</returns>
-        public async Task<NavObjectLicenseStatus> ExportSingleAsync(NavObjectReference navObjectRef, Stream outStream, CancellationToken cancellationToken)
+        /// <param name="cancellationToken">A token to allow cancellation of the operation<</param>
+        /// <returns>Information about service tiers and their status</returns>
+        public Task<ISet<NavServiceTier>> AvailableServiceTiers(CancellationToken cancellationToken)
+        {
+            return this.Context.ServiceTiers(cancellationToken);
+        }
+
+    /// <summary>
+    /// Exports the txt representation of an object in NAV to a stream. Implementations will typically export the object 
+    /// (using C/Front or finsql.exe command-line depending on NAV version)
+    /// </summary>
+    /// <param name="navObjectRef">The object to export.</param>
+    /// <param name="outStream">Out stream for exported object</param>
+    /// <param name="cancellationToken">A token to allow cancellation of the operation</param>
+    /// <exception cref="NavAdapterException">In case on an error</exception>
+    /// <exception cref="NavServerInstanceException">In case a service tier cannot be found</exception>
+    /// <returns>Task encapsulating asynchronous export operation</returns>
+    public async Task<NavObjectLicenseStatus> ExportSingleAsync(NavObjectReference navObjectRef, Stream outStream, CancellationToken cancellationToken)
         {
             var filter = "Type=" + navObjectRef.Type + ";ID=" + navObjectRef.Id;
             var tmpExportFile = Path.GetTempPath() + Guid.NewGuid().ToString() + ".txt";
@@ -136,19 +148,20 @@ namespace Statical.NavAdapter.Nav2013
         /// Implementations to will typically export the object (using C/Front or finsql.exe command-line).
         /// </summary>
         /// <param name="idRanges">The object ranges to export</param>
+        /// <param name="versionExclusions">The object versions not to export</param>
         /// <param name="filePath">The file to export to.</param>
         /// <param name="cancellationToken">A token to allow cancellation of the operation</param>
         /// <exception cref="NavAdapterException">In case on an error</exception>
-        /// <exception cref="CannotFindServiceTierException">In case a service tier cannot be found</exception> 
+        /// <exception cref="NavServerInstanceException">In case a service tier cannot be found</exception> 
         /// <exception cref="NavObjectLicenseException">In case objects cannot be exported due to license issue.</exception> 
         /// <returns>Task encapsulating asynchronous operation</returns>
-        public async Task ExportMultipleAsync(ISet<NavObjectIdRange> idRanges, string filePath, CancellationToken cancellationToken)
+        public async Task ExportMultipleAsync(ISet<NavObjectIdRange> idRanges, ISet<NavVersionListFilter> versionExclusions, string filePath, CancellationToken cancellationToken)
         {
             if (!filePath.EndsWith(".txt"))
             {
                 throw new ArgumentException("filePath parameter must end with .txt");
             }
-            var filter = "ID=" + NavObjectIdRange.NavFilterExpression(idRanges);
+            var filter = "ID=" + NavObjectIdRange.NavFilterExpression(idRanges) + ";Version List=" + NavVersionListFilter.NavFilterExpression(versionExclusions);
             // Here we ignore the result of ExportFilterAsync deliberately, as for multiple objects, 
             // an exception is thrown instead in license issues
             await ExportFilterAsync(filter, false, filePath, cancellationToken).ConfigureAwait(false);
@@ -239,6 +252,13 @@ namespace Statical.NavAdapter.Nav2013
                 .Append(Param("file", filePath)).Append(",")
                 .Append(Param("servername", this.Context.DbServer)).Append(",")
                 .Append(Param("database", this.Context.DbName)).Append(",");
+            if (! String.IsNullOrWhiteSpace(this.Context.NavServerName) && ! String.IsNullOrWhiteSpace(this.Context.NavServerInstance))
+            {
+                args
+                    .Append(Param("navservername", this.Context.NavServerName)).Append(",")
+                    .Append(Param("navserverinstance", this.Context.NavServerInstance)).Append(",")
+                    .Append(Param("navservermanagementport", this.Context.NavServerManagementPort.ToString())).Append(",");
+            }
             if (this.Context.IsNtAuthentication)
             {
                 args
@@ -270,7 +290,7 @@ namespace Statical.NavAdapter.Nav2013
                 // Execute command
                 process = new Process();
                 process.StartInfo.FileName = "CMD.EXE";
-                process.StartInfo.Arguments = " /S /C \"" + Quote(this.FinsqlFullName) + " " + args.ToString() + "\"";
+                process.StartInfo.Arguments = " /S /C \"" + Quote(FinsqlFullName) + " " + args + "\"";
                 process.StartInfo.UseShellExecute = false;
                 process.StartInfo.RedirectStandardError = true;
                 process.StartInfo.CreateNoWindow = true;
@@ -313,7 +333,7 @@ namespace Statical.NavAdapter.Nav2013
                         throw new NavAdapterException("Could not open export log file: " + tmpLogFile);
                     }
                     var logText = File.ReadAllText(tmpLogFile);
-                    if (logText.Contains("You do not have permission to read the"))
+                    if (logText.Contains("[18023699]") || logText.Contains("You do not have permission to read the"))
                     {
                         if (singleObject)
                         {
@@ -324,8 +344,9 @@ namespace Statical.NavAdapter.Nav2013
                             throw new NavObjectLicenseException("Export failed with the following log messages:" + Environment.NewLine + logText);
                         }
                     } 
-                    else if (logText.Contains("There are no NAV Server instances available for this database") |
+                    else if (logText.Contains("There are no NAV Server instances available for this database") ||
                              logText.Contains("This database is registered with several NAV Server instances"))
+                            // TODO: Here we should add error code comparison as for permission check (see above)
                     {
                         throw new NavServerInstanceException("Export failed with the following log message:" + Environment.NewLine + logText);
                     }

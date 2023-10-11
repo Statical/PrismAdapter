@@ -23,7 +23,7 @@ namespace NavAdapterTestApp
         {
             // Set up environment
             var env = new NavEnvironment();
-            // TODO get from config file
+
             string adapter = ConfigurationManager.AppSettings["Adapter"];
             env.FinSqlPath = ConfigurationManager.AppSettings["FinSqlPath"];
             env.DbServer = ConfigurationManager.AppSettings["DbServer"];
@@ -66,7 +66,10 @@ namespace NavAdapterTestApp
                 idRanges.Add(new NavObjectIdRange(null, 17));
                 idRanges.Add(new NavObjectIdRange(19, 36));
                 idRanges.Add(new NavObjectIdRange(50003, null));
-                var metadata = await nav.ObjectMetadataAsync(idRanges, cts.Token);
+                var versionExclusions = new HashSet<NavVersionListFilter>();
+                versionExclusions.Add(new NavVersionListFilter("DONTINCLUDE"));
+                versionExclusions.Add(new NavVersionListFilter("WILD*CARD"));
+                var metadata = await nav.ObjectMetadataAsync(idRanges, versionExclusions, cts.Token);
                 // dump to file
                 var metadataFile = "test-metadata.txt";
                 using (var sw = new StreamWriter(metadataFile))
@@ -88,7 +91,7 @@ namespace NavAdapterTestApp
 
                 // ExportMultiple
                 Console.WriteLine("ExportMultiple");
-                await nav.ExportMultipleAsync(idRanges, "test-export-multiple.txt", cts.Token);
+                await nav.ExportMultipleAsync(idRanges, versionExclusions, "test-export-multiple.txt", cts.Token);
             }
             catch (Exception e)
             {

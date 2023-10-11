@@ -24,6 +24,7 @@ namespace Statical.NavAdapter
             Contract.Requires(lower != null || upper != null);
             Contract.Requires((lower != null && upper != null) ? lower.Value <= upper.Value : true);
 
+
             if (!lower.HasValue && !upper.HasValue) // TODO necessary?
             {
                 throw new ArgumentException("Either lower or upper must be not null");
@@ -47,13 +48,22 @@ namespace Statical.NavAdapter
         public int? Upper { get; private set; }
 
         /// <summary>
+        /// Returns a string representation of this filter for printing
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            return NavFilterExpression();
+        }
+
+        /// <summary>
         /// Create an SQL where clause over the NAV object id range.
         /// </summary>
         /// <param name="idRanges">A sequence of object id ranges.</param>
         /// <returns></returns>
         public static string SqlWhereClause(ISet<NavObjectIdRange> idRanges)
         {
-            return string.Join(" OR ", idRanges.Select(r => r.SqlWhereClause()));
+            return string.Join(" OR ", idRanges.Select(range => range.SqlWhereClause()));
         }
 
         private string SqlWhereClause()
@@ -83,7 +93,7 @@ namespace Statical.NavAdapter
         /// <returns>An object filter expression</returns>
         public static string NavFilterExpression(ISet<NavObjectIdRange> idRanges)
         {
-            return string.Join("|", idRanges.Select(r => r.NavFilterExpression()));
+            return string.Join("|", idRanges.Select(range => range.NavFilterExpression()));
         }
 
         private string NavFilterExpression()

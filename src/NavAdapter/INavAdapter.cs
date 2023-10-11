@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using System.Collections.Generic;
 using System.IO;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Diagnostics.Contracts;
 
 namespace Statical.NavAdapter
@@ -46,10 +42,20 @@ namespace Statical.NavAdapter
         /// </summary>
         /// <param name="idRanges">NAV style filter expression on ID field, e.g. "0..50000|100000..". 
         /// The function must return metadata for all objects matching that filter</param>
+        /// <param name="versionExclusions">Filter against NAV object's VersionList.
+        /// The function must return meradata for all objects that do NOT match any of the exclusions</param>
         /// <param name="cancellationToken">A token to allow cancellation of the operation</param>
         /// <exception cref="NavAdapterException">In case on an error</exception>
         /// <returns>Metadata for objects matching at least one of the ranges  of idRanges</returns>
-        Task<ISet<NavObjectMetadata>> ObjectMetadataAsync(ISet<NavObjectIdRange> idRanges, CancellationToken cancellationToken);
+        Task<ISet<NavObjectMetadata>> ObjectMetadataAsync(ISet<NavObjectIdRange> idRanges, ISet<NavVersionListFilter> versionExclusions, CancellationToken cancellationToken);
+
+
+        /// <summary>
+        /// Lists NAV service tiers.
+        /// </summary>
+        /// <param name="cancellationToken">A token to allow cancellation of the operation<</param>
+        /// <returns>Information about service tiers and their status</returns>
+        Task<ISet<NavServiceTier>> AvailableServiceTiers(CancellationToken cancellationToken);
 
         /// <summary>
         /// Exports the txt representation of an object in NAV to a stream. Implementations will typically export the object 
@@ -61,19 +67,20 @@ namespace Statical.NavAdapter
         /// <exception cref="NavAdapterException">In case on an error</exception>
         /// <returns>Task encapsulating asynchronous export operation</returns>
         Task<NavObjectLicenseStatus> ExportSingleAsync(NavObjectReference navObjectRef, Stream outStream, CancellationToken cancellationToken);
-        
+
         /// <summary>
         /// Exports multiple objects from NAV to a file to the specified file name.
         /// Implementations will typically export the object (using C/Front or finsql.exe command-line).
         /// </summary>
         /// <param name="idRanges">The object ranges to export</param>
+        /// <param name="versionExclusions">The object versions not to export</param>
         /// <param name="filePath">The file to export to.</param>
         /// <param name="cancellationToken">A token to allow cancellation of the operation</param>
         /// <exception cref="NavAdapterException">In case on an error</exception>
         /// <exception cref="NavObjectLicenseException">In case objects cannot be exported due to license issue.</exception> 
         /// Implementations should ignore unlicensed objects, if possible.</exception>
         /// <returns>Task encapsulating asynchronous operation</returns>
-        Task ExportMultipleAsync(ISet<NavObjectIdRange> idRanges, string filePath, CancellationToken cancellationToken);
+        Task ExportMultipleAsync(ISet<NavObjectIdRange> idRanges, ISet<NavVersionListFilter> versionExclusions, string filePath, CancellationToken cancellationToken);
 
         /// <summary>
         /// Opens C/AL designer for the specified object. Requires the property SupportsDesignObject to be true.
@@ -108,12 +115,17 @@ namespace Statical.NavAdapter
 
         public bool SupportsDesignObject { get { return default(bool); } }
 
-        public Task<ISet<NavObjectMetadata>> ObjectMetadataAsync(ISet<NavObjectIdRange> idRanges, CancellationToken cancellationToken)
+        public Task<ISet<NavObjectMetadata>> ObjectMetadataAsync(ISet<NavObjectIdRange> idRanges, ISet<NavVersionListFilter> versionExclusions, CancellationToken cancellationToken)
         {
             Contract.Requires(idRanges != null);
             Contract.Requires(Contract.ForAll(idRanges, x => x != null));
 
             return default(Task<ISet<NavObjectMetadata>>);
+        }
+
+        public Task<ISet<NavServiceTier>> AvailableServiceTiers(CancellationToken cancellationToken)
+        {
+            return default(Task<ISet<NavServiceTier>>);
         }
 
         public Task<NavObjectLicenseStatus> ExportSingleAsync(NavObjectReference navObjectRef, Stream outStream, CancellationToken cancellationToken)
@@ -125,7 +137,7 @@ namespace Statical.NavAdapter
             return default(Task<NavObjectLicenseStatus>);
         }
 
-        public Task ExportMultipleAsync(ISet<NavObjectIdRange> idRanges, string filePath, CancellationToken cancellationToken)
+        public Task ExportMultipleAsync(ISet<NavObjectIdRange> idRanges, ISet<NavVersionListFilter> versionExclusions, string filePath, CancellationToken cancellationToken)
         {
             Contract.Requires(idRanges != null);
             Contract.Requires(Contract.ForAll(idRanges, x => x != null));

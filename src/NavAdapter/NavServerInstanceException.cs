@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Runtime.Serialization;
 using System.Diagnostics.Contracts;
 
 namespace Statical.NavAdapter;
@@ -12,8 +11,7 @@ namespace Statical.NavAdapter;
 /// uner "Options" menu. To work around the issue, open finsql.exe without specifying an "id" parameter, open the database and select
 /// an instance under File - Database - Information. Then close the development environment.
 /// </summary>
-[Serializable]
-public class NavServerInstanceException : NavObjectExportException, ISerializable
+public class NavServerInstanceException : NavObjectExportException
 {
     /// <summary>
     /// Constructs a new NavServerInstanceException.
@@ -29,7 +27,7 @@ public class NavServerInstanceException : NavObjectExportException, ISerializabl
     public NavServerInstanceException(string message)
         : base(message)
     {
-        Contract.Requires(message != null);
+        Contract.Requires(message is not null);
     }
 
     /// <summary>
@@ -38,16 +36,7 @@ public class NavServerInstanceException : NavObjectExportException, ISerializabl
     public NavServerInstanceException(string message, Exception inner)
         : base(message, inner)
     {
-        Contract.Requires(message != null);
-        Contract.Requires(inner != null);
-    }
-
-    public virtual void GetObjectData(SerializationInfo info, StreamingContext context)
-    {
-        Contract.Requires(info != null);
-
-        base.GetObjectData(info, context);
-        if (info == null)
-            throw new ArgumentNullException("info");
+        Contract.Requires(message is not null);
+        Contract.Requires(inner is not null);
     }
 }

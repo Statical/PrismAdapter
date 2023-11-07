@@ -23,10 +23,10 @@ public static class NavAdapterHelper
     /// <returns>A set of object metadata</returns>
     public static async Task<ISet<NavObjectMetadata>> ObjectMetadataAsync(this NavEnvironment environment, ISet<NavObjectIdRange> idRanges, ISet<NavVersionListFilter> versionExclusions, CancellationToken cancellationToken)
     {
-        Contract.Requires(environment != null);
-        Contract.Requires(idRanges != null);
-        Contract.Requires(Contract.ForAll(idRanges, x => x != null));
-        Contract.Requires(Contract.ForAll(versionExclusions, x => x != null && ! String.IsNullOrWhiteSpace(x.Filter)));
+        Contract.Requires(environment is not null);
+        Contract.Requires(idRanges is not null);
+        Contract.Requires(Contract.ForAll(idRanges, x => x is not null));
+        Contract.Requires(Contract.ForAll(versionExclusions, x => x is not null && ! String.IsNullOrWhiteSpace(x.Filter)));
 
         var result = new HashSet<NavObjectMetadata>();
 
@@ -99,7 +99,7 @@ public static class NavAdapterHelper
     /// <returns>Information about service tiers and their status</returns>
     public static async Task<ISet<NavServiceTier>> ServiceTiers(this NavEnvironment environment, CancellationToken cancellationToken)
     {
-        Contract.Requires(environment != null);
+        Contract.Requires(environment is not null);
 
         var result = new HashSet<NavServiceTier>();
 
@@ -172,7 +172,7 @@ public static class NavAdapterHelper
     /// <returns></returns>
     public static async Task<ISet<string>> TestAsync(this NavEnvironment environment, CancellationToken cancellationToken)
     {
-        Contract.Requires(environment != null);
+        Contract.Requires(environment is not null);
 
         var result = new HashSet<string>();
         try
@@ -198,7 +198,7 @@ public static class NavAdapterHelper
     /// <returns>The process</returns>
     public static async Task<Process> WaitAsync(Process process, CancellationToken cancellationToken, bool throwOnExitError = true)
     {
-        Contract.Requires(process != null);
+        Contract.Requires(process is not null);
 
         while (true)
         {

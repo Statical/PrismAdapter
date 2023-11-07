@@ -117,8 +117,8 @@ internal sealed class NavAdapterCodeContract : INavAdapter
 
     public Task<ISet<NavObjectMetadata>> ObjectMetadataAsync(ISet<NavObjectIdRange> idRanges, ISet<NavVersionListFilter> versionExclusions, CancellationToken cancellationToken)
     {
-        Contract.Requires(idRanges != null);
-        Contract.Requires(Contract.ForAll(idRanges, x => x != null));
+        Contract.Requires(idRanges is not null);
+        Contract.Requires(Contract.ForAll(idRanges, x => x is not null));
 
         return default;
     }
@@ -130,8 +130,8 @@ internal sealed class NavAdapterCodeContract : INavAdapter
 
     public Task<NavObjectLicenseStatus> ExportSingleAsync(NavObjectReference navObjectRef, Stream outStream, CancellationToken cancellationToken)
     {
-        Contract.Requires(navObjectRef != null);
-        Contract.Requires(outStream != null);
+        Contract.Requires(navObjectRef is not null);
+        Contract.Requires(outStream is not null);
         Contract.Requires(outStream.CanWrite);
 
         return default;
@@ -139,8 +139,8 @@ internal sealed class NavAdapterCodeContract : INavAdapter
 
     public Task ExportMultipleAsync(ISet<NavObjectIdRange> idRanges, ISet<NavVersionListFilter> versionExclusions, string filePath, CancellationToken cancellationToken)
     {
-        Contract.Requires(idRanges != null);
-        Contract.Requires(Contract.ForAll(idRanges, x => x != null));
+        Contract.Requires(idRanges is not null);
+        Contract.Requires(Contract.ForAll(idRanges, x => x is not null));
         Contract.Requires(!string.IsNullOrWhiteSpace(filePath));
 
         return default;
@@ -149,7 +149,7 @@ internal sealed class NavAdapterCodeContract : INavAdapter
     public Task DesignObjectAsync(NavObjectReference navObjectRef)
     {
         Contract.Requires(SupportsDesignObject);
-        Contract.Requires(navObjectRef != null);
+        Contract.Requires(navObjectRef is not null);
 
         return default;
     }
@@ -160,7 +160,7 @@ internal sealed class NavAdapterCodeContract : INavAdapter
         //Contract.Ensures(
         //    Contract.Result<Task<ISet<string>>>().IsCanceled ||
         //    Contract.Result<Task<ISet<string>>>().IsFaulted ||
-        //    Contract.ForAll(Contract.Result<Task<ISet<string>>>().Result, x => x != null));
+        //    Contract.ForAll(Contract.Result<Task<ISet<string>>>().Result, x => x is not null));
 
         return default;
     }
@@ -174,8 +174,8 @@ internal sealed class NavAdapterCodeContract : INavAdapter
     {
         Contract.Invariant(!string.IsNullOrWhiteSpace(AdapterName));
         Contract.Invariant(!string.IsNullOrWhiteSpace(AdapterVersion));
-        Contract.Invariant(AdapterDescription != null);
-        Contract.Invariant(Context != null);
+        Contract.Invariant(AdapterDescription is not null);
+        Contract.Invariant(Context is not null);
     }
 }
 #endregion

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Runtime.Serialization;
 using System.Diagnostics.Contracts;
 
 namespace Statical.NavAdapter;
@@ -7,8 +6,7 @@ namespace Statical.NavAdapter;
 /// <summary>
 /// Exception thrown when a NAV adapter operation fails.
 /// </summary>
-[Serializable]
-public class NavAdapterException : Exception, ISerializable
+public class NavAdapterException : Exception
 {
     /// <summary>
     /// Constructs a new NavAdapterException.
@@ -24,7 +22,7 @@ public class NavAdapterException : Exception, ISerializable
     public NavAdapterException(string message)
         : base(message)
     {
-        Contract.Requires(message != null);
+        Contract.Requires(message is not null);
     }
 
     /// <summary>
@@ -33,16 +31,7 @@ public class NavAdapterException : Exception, ISerializable
     public NavAdapterException(string message, Exception inner)
         : base(message, inner)
     {
-        Contract.Requires(message != null);
-        Contract.Requires(inner != null);
-    }
-
-    public virtual void GetObjectData(SerializationInfo info, StreamingContext context)
-    {
-        Contract.Requires(info != null);
-
-        base.GetObjectData(info, context);
-        if (info == null)
-            throw new ArgumentNullException("info");
+        Contract.Requires(message is not null);
+        Contract.Requires(inner is not null);
     }
 }

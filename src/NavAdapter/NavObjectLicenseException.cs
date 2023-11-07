@@ -8,8 +8,7 @@ namespace Statical.NavAdapter;
 /// Exception thrown when a NAV object could not be exported because it is not included
 /// in the currently loaded NAV license.
 /// </summary>
-[Serializable]
-public class NavObjectLicenseException : NavObjectExportException, ISerializable
+public class NavObjectLicenseException : NavObjectExportException
 {
     /// <summary>
     /// Constructs a new NavObjectLicenseException.
@@ -25,7 +24,7 @@ public class NavObjectLicenseException : NavObjectExportException, ISerializable
     public NavObjectLicenseException(string message)
         : base(message)
     {
-        Contract.Requires(message != null);
+        Contract.Requires(message is not null);
     }
 
     /// <summary>
@@ -34,16 +33,7 @@ public class NavObjectLicenseException : NavObjectExportException, ISerializable
     public NavObjectLicenseException(string message, Exception inner)
         : base(message, inner)
     {
-        Contract.Requires(message != null);
-        Contract.Requires(inner != null);
-    }
-
-    public virtual void GetObjectData(SerializationInfo info, StreamingContext context)
-    {
-        Contract.Requires(info != null);
-
-        base.GetObjectData(info, context);
-        if (info == null)
-            throw new ArgumentNullException("info");
+        Contract.Requires(message is not null);
+        Contract.Requires(inner is not null);
     }
 }

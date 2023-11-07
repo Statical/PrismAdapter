@@ -16,7 +16,7 @@ public sealed class Nav2015Adapter : Nav2013Adapter, INavAdapter
     /// <param name="env">The NAV environment to connect to</param>
     public Nav2015Adapter(NavEnvironment env) : base(env)
     {
-        Contract.Requires(env != null);
+        Contract.Requires(env is not null);
         this.AdapterName = "Dynamics NAV 2015";
         this.AdapterDescription = "Adapter to interface with Dynamics NAV 2015.";
         this.AdapterVersion = "1.0";

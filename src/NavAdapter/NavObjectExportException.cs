@@ -7,8 +7,7 @@ namespace Statical.NavAdapter;
 /// <summary>
 /// Exception thrown when a NAV object could not be exported.
 /// </summary>
-[Serializable]
-public class NavObjectExportException : NavAdapterException, ISerializable
+public class NavObjectExportException : NavAdapterException
 {
     /// <summary>
     /// Constructs a new NavExportException.
@@ -24,7 +23,7 @@ public class NavObjectExportException : NavAdapterException, ISerializable
     public NavObjectExportException(string message)
         : base(message)
     {
-        Contract.Requires(message != null);
+        Contract.Requires(message is not null);
     }
 
     /// <summary>
@@ -33,16 +32,7 @@ public class NavObjectExportException : NavAdapterException, ISerializable
     public NavObjectExportException(string message, Exception inner)
         : base(message, inner)
     {
-        Contract.Requires(message != null);
-        Contract.Requires(inner != null);
-    }
-
-    public virtual void GetObjectData(SerializationInfo info, StreamingContext context)
-    {
-        Contract.Requires(info != null);
-
-        base.GetObjectData(info, context);
-        if (info == null)
-            throw new ArgumentNullException("info");
+        Contract.Requires(message is not null);
+        Contract.Requires(inner is not null);
     }
 }

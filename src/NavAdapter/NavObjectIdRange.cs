@@ -20,7 +20,7 @@ public class NavObjectIdRange
     /// <param name="upper">The upper object id limit</param>
     public NavObjectIdRange(int? lower, int? upper)
     {
-        Contract.Requires(lower != null || upper != null);
+        Contract.Requires(lower is not null || upper is not null);
         Contract.Requires(lower == null || upper == null || lower.Value <= upper.Value);
 
 

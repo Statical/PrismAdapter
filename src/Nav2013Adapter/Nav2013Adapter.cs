@@ -23,7 +23,7 @@ public class Nav2013Adapter : INavAdapter
     /// <param name="env">The NAV environment to connect to</param>
     public Nav2013Adapter(NavEnvironment env)
     {
-        Contract.Requires(env != null);
+        Contract.Requires(env is not null);
         this.Context = env;
         this.FinsqlFullName = ValidateFinsqlPath(env.FinSqlPath);
         this.AdapterName = "Dynamics NAV 2013";

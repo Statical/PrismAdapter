@@ -28,7 +28,7 @@ public class Nav2013Adapter : INavAdapter
         this.FinsqlFullName = ValidateFinsqlPath(env.FinSqlPath);
         this.AdapterName = "Dynamics NAV 2013";
         this.AdapterDescription = "Adapter to interface with Dynamics NAV 2013.";
-        this.AdapterVersion = "1.0";
+        this.AdapterVersion = "1.2";
     }
     #endregion
 

@@ -4,7 +4,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>Statical.NavAdapter.Nav2013</RootNamespace>
     <CodeContractsAssemblyMode>0</CodeContractsAssemblyMode>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
     <AssemblyTitle>Statical Nav2013Adapter</AssemblyTitle>
     <Description>Statical Prism mirror extension to interface with Dynamics NAV 2013 and newer databases.</Description>
     <Company>Statical</Company>

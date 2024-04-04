@@ -3,7 +3,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <OutputType>Library</OutputType>
     <RootNamespace>Statical.NavAdapter</RootNamespace>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
     <AssemblyTitle>Statical NavAdapter</AssemblyTitle>
     <Description>Statical Prism storage extensibility mechanism.</Description>
     <Company>Statical</Company>
